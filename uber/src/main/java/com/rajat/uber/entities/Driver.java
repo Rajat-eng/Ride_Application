@@ -1,5 +1,7 @@
 package com.rajat.uber.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.locationtech.jts.geom.Point;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,4 +24,7 @@ public class Driver {
     private Boolean available;
     @Column(columnDefinition = "Geometry(Point, 4326)")
     Point currentLocation;
+
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Ride> rides = new ArrayList<>();
 }

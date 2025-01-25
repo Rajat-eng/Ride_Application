@@ -1,5 +1,7 @@
 package com.rajat.uber.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,4 +19,10 @@ public class Rider {
     private User user;
 
     private Double rating;
+
+    @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RideRequest> rideRequests; // One rider can have multiple ride requests
+
+    @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Ride> rides = new ArrayList<>();
 }
