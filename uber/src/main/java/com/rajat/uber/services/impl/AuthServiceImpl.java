@@ -20,7 +20,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public DriverDto onboardNewDriver(Long userId) {
+    public DriverDto onBoardNewDriver(Long userId) {
         return null;
     }
 }
