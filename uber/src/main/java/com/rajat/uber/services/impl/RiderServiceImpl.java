@@ -5,7 +5,7 @@ import com.rajat.uber.dto.DriverDto;
 import com.rajat.uber.dto.RideDto;
 import com.rajat.uber.dto.RideRequestDto;
 import com.rajat.uber.dto.RiderDto;
-import com.rajat.uber.services.RideService;
+import com.rajat.uber.services.RiderService;
 
 public class RiderServiceImpl implements RiderService {
 

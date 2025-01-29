@@ -6,9 +6,9 @@ import com.rajat.uber.dto.RideDto;
 import com.rajat.uber.dto.RiderDto;
 
 public interface DriverService {
-    RideDto accepRide(Long rideId);
+    RideDto acceptRide(Long rideId);
 
-    RideDto cencelRide(Long rideId);
+    RideDto cancelRide(Long rideId);
 
     RideDto startRide(Long rideId);
 
