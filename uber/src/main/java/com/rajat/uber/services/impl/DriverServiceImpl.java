@@ -21,7 +21,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public RideDto startRide(Long rideId) {
+    public RideDto startRide(Long rideId,String otp ) {
         return null;
     }
 
