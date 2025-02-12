@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.rajat.uber.dto.RideRequestDto;
 import com.rajat.uber.services.RiderService;
-import lombok.RequiredArgsConstructor;;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/riders")

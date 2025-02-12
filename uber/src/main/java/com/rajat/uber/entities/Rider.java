@@ -17,8 +17,8 @@ public class Rider {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    private Double rating;
+    
+    private Double rating = 0.0;
 
     @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RideRequest> rideRequests; // One rider can have multiple ride requests

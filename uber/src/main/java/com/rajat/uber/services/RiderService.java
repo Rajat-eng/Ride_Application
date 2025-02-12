@@ -1,13 +1,7 @@
 package com.rajat.uber.services;
 
 import java.util.List;
-import com.rajat.uber.dto.DriverDto;
-import com.rajat.uber.dto.RideDto;
-import com.rajat.uber.dto.RideRequestDto;
-import com.rajat.uber.dto.RiderDto;
-import com.rajat.uber.dto.UserDto;
-import com.rajat.uber.entities.Rider;
-import com.rajat.uber.entities.User;
+import com.rajat.uber.dto.*;
 
 public interface RiderService {
     RideRequestDto requestRide(RideRequestDto rideRequestDto);

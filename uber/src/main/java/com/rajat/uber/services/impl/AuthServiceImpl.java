@@ -29,13 +29,13 @@ public class AuthServiceImpl implements AuthService {
     public UserDto signup(SignUpDto signupDto) {
         User user=userRepository.findByEmail(null).orElse(null);
         if(user!=null){
-           throw new RuntimeConflictException("Cannot signup, User already exists with email "+signupDto.getEmail()) 
+           throw new RuntimeConflictException("Cannot signup, User already exists with email "+signupDto.getEmail()); 
         }
         // dto to entity
         User mappedUser=modelMapper.map(signupDto,User.class);
         mappedUser.setRoles(Set.of(Role.RIDER));
-        User savedUser=userRepository.save(mappedUser);
-        riderService.createNewRider(savedUser);
+        User savedUser=userRepository.save(mappedUser); 
+        riderService.createNewRider(modelMapper.map(savedUser,UserDto.class));
         return modelMapper.map(savedUser,UserDto.class);
     }
 
