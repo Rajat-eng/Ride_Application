@@ -1,5 +1,6 @@
 package com.rajat.uber.services;
 
+import java.sql.Driver;
 import java.util.List;
 import com.rajat.uber.dto.DriverDto;
 import com.rajat.uber.dto.RideDto;
@@ -19,4 +20,6 @@ public interface DriverService {
     DriverDto getMyProfile();
 
     List<RideDto> getAllMyRides();
+
+    Driver getCurrentDriver();
 }

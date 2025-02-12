@@ -1,12 +1,20 @@
 package com.rajat.uber.services.impl;
 
 import java.util.List;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
 import com.rajat.uber.dto.DriverDto;
 import com.rajat.uber.dto.RideDto;
 import com.rajat.uber.dto.RideRequestDto;
 import com.rajat.uber.dto.RiderDto;
 import com.rajat.uber.dto.UserDto;
+import com.rajat.uber.repositories.RideRequestRepository;
+import com.rajat.uber.repositories.RiderRepository;
 import com.rajat.uber.services.RiderService;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -15,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RiderServiceImpl implements RiderService {
     private final ModelMapper modelMapper;
     private final RiderRepository riderRepository;
-    private final RideRequestRepository 
+    private final RideRequestRepository rideRequestRepository;
 
     @Override
     public RideRequestDto requestRide(RideRequestDto rideRequestDto) {
