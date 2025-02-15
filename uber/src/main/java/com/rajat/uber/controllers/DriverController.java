@@ -22,13 +22,13 @@ public class DriverController {
     private final DriverService driverService;
 
     @PostMapping("/acceptRide/{rideRequestid}")
-    public ResponseEntity<RideDto> acceptRide(@RequestBody Long rideRequestId) {
+    public ResponseEntity<RideDto> acceptRide(@PathVariable Long rideRequestId) {
         return ResponseEntity.ok(driverService.acceptRide(rideRequestId));
     }
-    
+
     @PostMapping("/startRide/{rideRequestId}")
     public ResponseEntity<RideDto> startRide(@PathVariable Long rideRequestId,
-                                              @RequestBody RideStartDto rideStartDto) {
+            @RequestBody RideStartDto rideStartDto) {
         return ResponseEntity.ok(driverService.startRide(rideRequestId, rideStartDto.getOtp()));
     }
 }
