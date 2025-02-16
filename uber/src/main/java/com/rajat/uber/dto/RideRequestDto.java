@@ -1,7 +1,6 @@
 package com.rajat.uber.dto;
 
 import java.time.LocalDateTime;
-import org.locationtech.jts.geom.Point;
 import com.rajat.uber.entities.enums.PaymentMethod;
 import com.rajat.uber.entities.enums.RideRequestStatus;
 import lombok.AllArgsConstructor;
@@ -14,13 +13,14 @@ import lombok.NoArgsConstructor;
 public class RideRequestDto {
     private Long id;
 
-    private Point pickupLocation;
+    private PointDto pickupLocation;
 
-    private Point dropOffLocation;
+    private PointDto dropOffLocation;
 
     private LocalDateTime requestedTime;
 
     private RiderDto rider;
+    private Double fare;
 
     private PaymentMethod paymentMethod;
 

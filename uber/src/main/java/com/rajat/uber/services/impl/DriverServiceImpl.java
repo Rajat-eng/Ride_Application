@@ -1,6 +1,8 @@
 package com.rajat.uber.services.impl;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.rajat.uber.dto.DriverDto;
 import com.rajat.uber.dto.RideDto;
@@ -13,7 +15,7 @@ import com.rajat.uber.services.RideRequestService;
 
 import lombok.RequiredArgsConstructor;
 
-import java.sql.Driver;
+import com.rajat.uber.entities.*;
 import java.util.List;
 
 @Service
@@ -23,6 +25,7 @@ public class DriverServiceImpl implements DriverService {
     private final DriverRepository driverRepository;
     private final RideService rideService;
     private final ModelMapper modelMapper;
+
     @Override
     public RideDto acceptRide(Long rideId) {
         return null;
@@ -34,7 +37,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public RideDto startRide(Long rideId,String otp ) {
+    public RideDto startRide(Long rideId, String otp) {
         return null;
     }
 
@@ -54,13 +57,24 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public List<RideDto> getAllMyRides() {
-        return List.of();
+    public Page<RideDto> getAllMyRides(PageRequest pageRequest) {
+        return null;
     }
 
     @Override
     public Driver getCurrentDriver() {
-        return driverRepository.findById(2L).orElseThrow(() -> new ResourceNotFoundException("Driver not found with " +
-                "id "+2));
+        return driverRepository.findById(2L).orElseThrow(
+                () -> new ResourceNotFoundException("Driver not found with " + "id " + 2));
+    }
+
+    @Override
+    public Driver updateDriverAvailability(Driver driver, boolean available) {
+        driver.setAvailable(available);
+        return driverRepository.save(driver);
+    }
+
+    @Override
+    public Driver createNewDriver(Driver driver) {
+        return driverRepository.save(driver);
     }
 }

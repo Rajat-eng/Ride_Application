@@ -3,6 +3,8 @@ package com.rajat.uber.services.impl;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.rajat.uber.dto.DriverDto;
@@ -46,17 +48,17 @@ public class RiderServiceImpl implements RiderService {
     }
 
     @Override
-    public List<RideDto> getAllMyRides() {
-        return List.of();
+    public Page<RideDto> getAllMyRides(PageRequest pageRequest) {
+        return null;
     }
 
     @Override
-    public RiderDto createNewRider(UserDto userDto){
-        return null;   
+    public RiderDto createNewRider(UserDto userDto) {
+        return null;
     }
 
     @Override
-    public RiderDto getCurrentRider(){
+    public RiderDto getCurrentRider() {
         return null;
     }
 }

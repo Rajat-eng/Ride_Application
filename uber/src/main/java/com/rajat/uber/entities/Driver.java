@@ -27,4 +27,7 @@ public class Driver {
 
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Ride> rides = new ArrayList<>();
+
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Ride> ratings = new ArrayList<>();
 }

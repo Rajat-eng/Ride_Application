@@ -6,12 +6,18 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.rajat.uber.entities.enums.PaymentMethod;
 import com.rajat.uber.entities.enums.RideStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(indexes = {@Index(name = "idx_ride_rider", columnList = "rider_id"),
+        @Index(name = "idx_ride_driver", columnList = "driver_id")})
 public class Ride {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

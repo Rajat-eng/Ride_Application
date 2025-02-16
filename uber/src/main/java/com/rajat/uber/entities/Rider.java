@@ -9,6 +9,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Table(indexes = {@Index(name = "idx_ride_request_rider", columnList = "rider_id")})
 public class Rider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +18,7 @@ public class Rider {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-    
+
     private Double rating = 0.0;
 
     @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -25,4 +26,7 @@ public class Rider {
 
     @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Ride> rides = new ArrayList<>();
+
+    @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Rating> ratings = new ArrayList<>();
 }
