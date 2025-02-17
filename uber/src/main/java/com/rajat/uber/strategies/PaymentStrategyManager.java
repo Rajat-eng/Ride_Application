@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class PaymentStrategyManager {
+    // factory pattern
     private final WalletPaymentStrategy walletPaymentStrategy;
     private final CashPaymentStrategy cashPaymentStrategy;
 

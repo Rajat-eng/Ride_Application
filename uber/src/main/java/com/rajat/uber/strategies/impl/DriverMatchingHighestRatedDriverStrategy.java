@@ -12,7 +12,7 @@ import com.rajat.uber.repositories.DriverRepository;
 
 @Service
 @RequiredArgsConstructor
-@Transactional()
+@Transactional
 
 public class DriverMatchingHighestRatedDriverStrategy implements DriverMatchingStrategy {
     private final DriverRepository driverRepository;
