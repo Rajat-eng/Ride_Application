@@ -5,20 +5,20 @@ import org.springframework.data.domain.PageRequest;
 import com.rajat.uber.dto.RideRequestDto;
 import com.rajat.uber.entities.Driver;
 import com.rajat.uber.entities.Ride;
+import com.rajat.uber.entities.RideRequest;
+import com.rajat.uber.entities.Rider;
 import com.rajat.uber.entities.enums.RideStatus;
 
 public interface RideService {
 
     Ride getRideById(Long rideId);
 
-    void matchWithDrivers(RideRequestDto rideRequestDto);
+    Ride createNewRide(RideRequest rideRequestDto, Driver driver);
 
-    Ride createNewRide(RideRequestDto rideRequestDto, Driver driver);
+    Ride updateRideStatus(Ride ride, RideStatus rideStatus);
 
-    Ride updateRideStatus(Long rideId, RideStatus rideStatus);
+    Page<Ride> getAllRidesOfRider(Rider rider, PageRequest pageRequest);
 
-    Page<Ride> getAllRidesOfRider(Long riderId, PageRequest pageRequest);
-
-    Page<Ride> getAllRidesOfDriver(Long driverId, PageRequest pageRequest);
+    Page<Ride> getAllRidesOfDriver(Driver driver, PageRequest pageRequest);
 
 }

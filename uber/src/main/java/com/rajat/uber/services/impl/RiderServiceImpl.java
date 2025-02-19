@@ -12,9 +12,21 @@ import com.rajat.uber.dto.RideDto;
 import com.rajat.uber.dto.RideRequestDto;
 import com.rajat.uber.dto.RiderDto;
 import com.rajat.uber.dto.UserDto;
+import com.rajat.uber.entities.Driver;
+import com.rajat.uber.entities.Ride;
+import com.rajat.uber.entities.RideRequest;
+import com.rajat.uber.entities.Rider;
+import com.rajat.uber.entities.User;
+import com.rajat.uber.entities.enums.RideRequestStatus;
+import com.rajat.uber.entities.enums.RideStatus;
+import com.rajat.uber.exceptions.ResourceNotFoundException;
 import com.rajat.uber.repositories.RideRequestRepository;
 import com.rajat.uber.repositories.RiderRepository;
+import com.rajat.uber.services.DriverService;
+import com.rajat.uber.services.RatingService;
+import com.rajat.uber.services.RideService;
 import com.rajat.uber.services.RiderService;
+import com.rajat.uber.strategies.RideStrategyManager;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,40 +37,90 @@ import lombok.extern.slf4j.Slf4j;
 public class RiderServiceImpl implements RiderService {
     private final ModelMapper modelMapper;
     private final RiderRepository riderRepository;
+    private final RideService rideService;
+    private final DriverService driverService;
+    private final RatingService ratingService;
+    private final RideStrategyManager rideStrategyManager;
     private final RideRequestRepository rideRequestRepository;
 
     @Override
     public RideRequestDto requestRide(RideRequestDto rideRequestDto) {
-        return null;
+        Rider rider=getCurrentRider();
+        RideRequest rideRequest = modelMapper.map(rideRequestDto, RideRequest.class);
+        rideRequest.setRideRequestStatus(RideRequestStatus.PENDING);
+        rideRequest.setRider(rider);
+        Double fare = rideStrategyManager.rideFareCalculationStrategy().calculateFare(rideRequest);
+        rideRequest.setFare(fare);
+        RideRequest savedRideRequest = rideRequestRepository.save(rideRequest);
+        List<Driver> drivers = rideStrategyManager
+                .driverMatchingStrategy(rider.getRating()).findMatchingDriver(rideRequest);
+        // TODO : Send notification to all the drivers about this ride request
+        return modelMapper.map(savedRideRequest, RideRequestDto.class);
     }
 
     @Override
     public RideDto cancelRide(Long rideId) {
-        return null;
+        Rider rider = getCurrentRider();
+        Ride ride = rideService.getRideById(rideId);
+
+        if(!rider.equals(ride.getRider())) {
+            throw new RuntimeException(("Rider does not own this ride with id: "+rideId));
+        }
+
+        if(!ride.getRideStatus().equals(RideStatus.CONFIRMED)) {
+            throw new RuntimeException("Ride cannot be cancelled, invalid status: "+ride.getRideStatus());
+        }
+
+        Ride savedRide = rideService.updateRideStatus(ride, RideStatus.CANCELLED);
+        driverService.updateDriverAvailability(ride.getDriver(), true);
+
+        return modelMapper.map(savedRide, RideDto.class);
     }
 
     @Override
     public DriverDto rateDriver(Long rideId, Integer rating) {
-        return null;
+        Ride ride = rideService.getRideById(rideId);
+        Rider rider = getCurrentRider();
+
+        if(!rider.equals(ride.getRider())) {
+            throw new RuntimeException("Rider is not the owner of this Ride");
+        }
+
+        if(!ride.getRideStatus().equals(RideStatus.ENDED)) {
+            throw new RuntimeException("Ride status is not Ended hence cannot start rating, status: "+ride.getRideStatus());
+        }
+
+        return ratingService.rateDriver(ride, rating);
     }
 
     @Override
     public RiderDto getMyProfile() {
-        return null;
+        Rider currentRider = getCurrentRider();
+        return modelMapper.map(currentRider, RiderDto.class);
     }
 
     @Override
     public Page<RideDto> getAllMyRides(PageRequest pageRequest) {
-        return null;
+        Rider currentRider = getCurrentRider();
+        return rideService.getAllRidesOfRider(currentRider, pageRequest).map(
+                ride -> modelMapper.map(ride, RideDto.class)
+        );
     }
 
     @Override
-    public RiderDto createNewRider(UserDto userDto) {
-        return null;
+    public Rider createNewRider(User user) {
+        Rider rider = Rider
+                .builder()
+                .user(user)
+                .rating(0.0)
+                .build();
+        return riderRepository.save(rider);
     }
 
     @Override
-    public RiderDto getCurrentRider() {
-        return null;
+    public Rider getCurrentRider() {
+        return riderRepository.findById(1L).orElseThrow(() -> new ResourceNotFoundException(
+            "Rider not found with id: "+1
+    ));
     }
 }

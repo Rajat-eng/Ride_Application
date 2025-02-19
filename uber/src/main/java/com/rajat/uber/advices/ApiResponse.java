@@ -1,7 +1,5 @@
 package com.rajat.uber.advices;
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
 
 public class ApiResponse<T> {

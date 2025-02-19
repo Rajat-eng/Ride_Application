@@ -3,12 +3,18 @@ package com.rajat.uber.entities;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(indexes = {@Index(name = "idx_ride_request_rider", columnList = "rider_id")})
 public class Rider {
     @Id
