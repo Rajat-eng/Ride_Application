@@ -29,7 +29,7 @@ public class JWTService {
                 .claim("email", user.getEmail())
                 .claim("roles", user.getRoles().toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*10))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*10)) // 10mins
                 .signWith(getSecretKey())
                 .compact();
     }
@@ -38,7 +38,7 @@ public class JWTService {
         return Jwts.builder()
                 .setSubject(user.getId().toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000L *60*60*24*30*6))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L*60*60*24)) // 1 day 
                 .signWith(getSecretKey())
                 .compact();
     }
