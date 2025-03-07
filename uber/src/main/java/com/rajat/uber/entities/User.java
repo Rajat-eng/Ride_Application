@@ -8,16 +8,19 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @Table(name = "app_user")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,5 +37,10 @@ public class User {
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(role->new SimpleGrantedAuthority("ROLE_" + role.name())).collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername(){
+        return this.email;
     }
 }

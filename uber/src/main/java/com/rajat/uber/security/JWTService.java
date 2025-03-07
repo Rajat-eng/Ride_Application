@@ -29,7 +29,7 @@ public class JWTService {
                 .claim("email", user.getEmail())
                 .claim("roles", user.getRoles().toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*10))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*10)) // 10mins
                 .signWith(getSecretKey())
                 .compact();
     }
@@ -38,12 +38,15 @@ public class JWTService {
         return Jwts.builder()
                 .setSubject(user.getId().toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000L *60*60*24*30*6))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L*60*60*24*7)) // 7 day 
                 .signWith(getSecretKey())
                 .compact();
     }
 
     public Long getUserIdFromToken(String token) {
+        // we have bypassed filtrechain , threfore I am in spring context not security context 
+        // If token is expired it throws error in controller
+        // handle this in GlobalException class
         Claims claims = Jwts.parserBuilder()
             .setSigningKey(getSecretKey()) // Use setSigningKey() instead of verifyWith()
             .build()
