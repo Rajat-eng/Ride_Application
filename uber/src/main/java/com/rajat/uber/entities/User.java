@@ -17,7 +17,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "app_user")
-public class User {
+public class User implements org.springframework.security.core.userdetails.UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,12 +28,26 @@ public class User {
 
     private String password;
 
-
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
+    // Implementing methods from UserDetails
+
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(role->new SimpleGrantedAuthority("ROLE_" + role.name())).collect(Collectors.toList());
+        return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+                .collect(Collectors.toList());
     }
+
+    @Override
+    public String getUsername() {
+        return this.email; // Return email as the username
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password; // Return email as the username
+    }
+
 }

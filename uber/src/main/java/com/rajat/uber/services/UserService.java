@@ -16,12 +16,13 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-        return (UserDetails) userRepository.findByEmail(username).orElse(null);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return (UserDetails) userRepository.findByEmail(username).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with email: " + username));
     }
 
-    public User getUserById(Long id){
+    public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: "+id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 }

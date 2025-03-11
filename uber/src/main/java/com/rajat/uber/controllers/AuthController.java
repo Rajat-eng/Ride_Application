@@ -43,14 +43,16 @@ public class AuthController {
     @PostMapping("/onBoardNewDriver/{userId}")
     ResponseEntity<DriverDto> onBoardNewDriver(@PathVariable Long userId,
             @RequestBody OnboardDriverDto onboardDriverDto) {
-        return new ResponseEntity<>(authService.onBoardNewDriver(userId,
-                onboardDriverDto.getVehicleId()), HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                authService.onBoardNewDriver(userId, onboardDriverDto.getVehicleId()),
+                HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto,
             HttpServletRequest HttpServeletRequest, HttpServletResponse httpServletResponse) {
-        String tokens[] = authService.login(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+        String tokens[] =
+                authService.login(loginRequestDto.getEmail(), loginRequestDto.getPassword());
 
         Cookie cookie = new Cookie("token", tokens[1]);
         cookie.setHttpOnly(true);// refresh in cookie
@@ -61,10 +63,9 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<LoginResponseDto> refresh(HttpServletRequest request) {
         String refreshToken = Arrays.stream(request.getCookies())
-                .filter(cookie -> "refreshToken".equals(cookie.getName()))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElseThrow(() -> new AuthenticationServiceException("Refresh token not found inside the Cookies"));
+                .filter(cookie -> "refreshToken".equals(cookie.getName())).findFirst()
+                .map(Cookie::getValue).orElseThrow(() -> new AuthenticationServiceException(
+                        "Refresh token not found inside the Cookies"));
 
         String accessToken = authService.refreshToken(refreshToken);
 
