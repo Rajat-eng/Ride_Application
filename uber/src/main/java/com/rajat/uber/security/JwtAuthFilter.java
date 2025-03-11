@@ -10,8 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import com.rajat.uber.services.UserService;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import com.rajat.uber.entities.User;
+import com.rajat.uber.services.impl.UserService;
 
 @Configuration
 @RequiredArgsConstructor
@@ -42,7 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter{
             String token = requestTokenHeader.split("Bearer ")[1];
             Long userId = jwtService.getUserIdFromToken(token);
             if(userId!=null && SecurityContextHolder.getContext().getAuthentication()==null){
-                User user = userService.getUserById(userId);
+                User user = userService.getUserById(userId); // user already implemnts UserDetails
                 UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -53,3 +52,6 @@ public class JwtAuthFilter extends OncePerRequestFilter{
         }
     }
 }
+
+// I am in SecurityContext not in Services/Controllers context --> Error will not propogate in Controllers/Services
+// handlerExecptionResolver propogates error to other context
