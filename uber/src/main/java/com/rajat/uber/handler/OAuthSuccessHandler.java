@@ -2,7 +2,9 @@ package com.rajat.uber.handler;
 
 import java.io.IOException;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -24,7 +26,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private JWTService jwtService;
 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException, ServletException {
+        Authentication authentication) throws IOException, ServletException {
         DefaultOAuth2User oauth2User = (DefaultOAuth2User) authentication.getPrincipal();
         String email = oauth2User.getAttribute("email");
         User user = userService.getUserByEmail(email);
@@ -34,7 +36,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         }
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
-
+   
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
