@@ -20,7 +20,9 @@ import com.rajat.uber.services.RideRequestService;
 
 import lombok.RequiredArgsConstructor;
 
-import com.rajat.uber.entities.*;
+import com.rajat.uber.entities.Driver;
+import com.rajat.uber.entities.Ride;
+import com.rajat.uber.entities.RideRequest;
 import com.rajat.uber.entities.enums.RideRequestStatus;
 import com.rajat.uber.entities.enums.RideStatus;
 

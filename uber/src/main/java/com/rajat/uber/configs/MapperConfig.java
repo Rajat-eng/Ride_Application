@@ -2,10 +2,12 @@ package com.rajat.uber.configs;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import com.rajat.uber.dto.PointDto;
 import com.rajat.uber.utils.GeometryUtil;
 import org.locationtech.jts.geom.Point;
 
+@Configuration
 public class MapperConfig {
     @Bean
     public ModelMapper modelMapper() {
