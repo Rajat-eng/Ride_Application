@@ -26,56 +26,48 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity(securedEnabled = true)
 
 public class WebSecurityConfig {
-<<<<<<< HEAD
+
+
         private final JwtAuthFilter jwtAuthFilter;
         private static final String[] PUBLIC_ROUTES = {"/auth/**"};
-=======
-    private final JwtAuthFilter jwtAuthFilter;
-    private static final String[] PUBLIC_ROUTES = { "/auth/**" };
-    private final OAuthSuccessHandler oAuthSuccesshandler;
-    private final OAuthFailureHandler oAuthFailurehandler;
->>>>>>> 822b4cdb66fa4615ad0f99da5bde1121e1edfe15
+        private final OAuthSuccessHandler oAuthSuccesshandler;
+        private final OAuthFailureHandler oAuthFailurehandler;
+
 
         @Bean
         SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-                httpSecurity.sessionManagement(sessionConfig -> sessionConfig
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                httpSecurity
+                                .sessionManagement(sessionConfig -> sessionConfig
+                                                .sessionCreationPolicy(
+                                                                SessionCreationPolicy.STATELESS))
                                 .csrf(csrfConfig -> csrfConfig.disable())
-                                .authorizeHttpRequests(auth -> auth.requestMatchers(PUBLIC_ROUTES)
-                                                .permitAll().anyRequest().authenticated())
+                                .cors(c -> c.configurationSource(corsConfigurationSource()))
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers(PUBLIC_ROUTES).permitAll()
+                                                .anyRequest().authenticated())
+                                .oauth2Login(oauth2config -> oauth2config
+                                                .successHandler(oAuthSuccesshandler)
+                                                .failureHandler(oAuthFailurehandler))
                                 .addFilterBefore(jwtAuthFilter,
                                                 UsernamePasswordAuthenticationFilter.class);
 
-<<<<<<< HEAD
                 return httpSecurity.build();
         }
-=======
-        httpSecurity
-                .sessionManagement(sessionConfig -> sessionConfig
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(csrfConfig -> csrfConfig.disable())
-                .cors(c->c.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_ROUTES).permitAll()
-                        .anyRequest().authenticated())
-                .oauth2Login(oauth2config -> oauth2config.successHandler(oAuthSuccesshandler)
-                        .failureHandler(oAuthFailurehandler))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return httpSecurity.build();
-    }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Allow Next.js frontend
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
->>>>>>> 822b4cdb66fa4615ad0f99da5bde1121e1edfe15
+        @Bean
+        CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Allow Next.js
+                                                                                   // frontend
+                configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+                configuration.setAllowCredentials(true);
+
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
+
 }
