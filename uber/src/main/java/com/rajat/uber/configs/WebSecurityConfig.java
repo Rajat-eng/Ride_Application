@@ -38,6 +38,7 @@ public class WebSecurityConfig {
                 .sessionManagement(sessionConfig -> sessionConfig
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrfConfig -> csrfConfig.disable())
+                .cors(c->c.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ROUTES).permitAll()
                         .anyRequest().authenticated())
