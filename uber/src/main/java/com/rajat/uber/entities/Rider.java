@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(indexes = {@Index(name = "idx_ride_request_rider", columnList = "rider_id")})
+@Table(name="rider")
 public class Rider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

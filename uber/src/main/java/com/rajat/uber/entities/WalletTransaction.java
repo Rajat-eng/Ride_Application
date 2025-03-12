@@ -28,13 +28,13 @@ public class WalletTransaction {
 
     private TransactionMethod transactionMethod;
 
-    @OneToOne
+    @OneToOne(cascade= CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "ride_id", nullable = false)
     private Ride ride;
 
     private String transactionId;
 
-    @ManyToOne
+    @ManyToOne(cascade= CascadeType.ALL)
     @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
 
