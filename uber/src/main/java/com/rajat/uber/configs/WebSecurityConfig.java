@@ -45,9 +45,9 @@ public class WebSecurityConfig {
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(PUBLIC_ROUTES).permitAll()
                                                 .anyRequest().authenticated())
-                                .oauth2Login(oauth2config -> oauth2config
-                                                .successHandler(oAuthSuccesshandler)
-                                                .failureHandler(oAuthFailurehandler))
+                                // .oauth2Login(oauth2config -> oauth2config
+                                //                 .successHandler(oAuthSuccesshandler)
+                                //                 .failureHandler(oAuthFailurehandler))
                                 .addFilterBefore(jwtAuthFilter,
                                                 UsernamePasswordAuthenticationFilter.class);
 

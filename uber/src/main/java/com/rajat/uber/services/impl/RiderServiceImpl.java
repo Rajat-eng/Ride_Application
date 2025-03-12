@@ -5,6 +5,7 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.rajat.uber.dto.DriverDto;
@@ -45,7 +46,7 @@ public class RiderServiceImpl implements RiderService {
 
     @Override
     public RideRequestDto requestRide(RideRequestDto rideRequestDto) {
-        Rider rider=getCurrentRider();
+        Rider rider = getCurrentRider();
         RideRequest rideRequest = modelMapper.map(rideRequestDto, RideRequest.class);
         rideRequest.setRideRequestStatus(RideRequestStatus.PENDING);
         rideRequest.setRider(rider);
@@ -63,12 +64,12 @@ public class RiderServiceImpl implements RiderService {
         Rider rider = getCurrentRider();
         Ride ride = rideService.getRideById(rideId);
 
-        if(!rider.equals(ride.getRider())) {
-            throw new RuntimeException(("Rider does not own this ride with id: "+rideId));
+        if (!rider.equals(ride.getRider())) {
+            throw new RuntimeException(("Rider does not own this ride with id: " + rideId));
         }
 
-        if(!ride.getRideStatus().equals(RideStatus.CONFIRMED)) {
-            throw new RuntimeException("Ride cannot be cancelled, invalid status: "+ride.getRideStatus());
+        if (!ride.getRideStatus().equals(RideStatus.CONFIRMED)) {
+            throw new RuntimeException("Ride cannot be cancelled, invalid status: " + ride.getRideStatus());
         }
 
         Ride savedRide = rideService.updateRideStatus(ride, RideStatus.CANCELLED);
@@ -82,12 +83,13 @@ public class RiderServiceImpl implements RiderService {
         Ride ride = rideService.getRideById(rideId);
         Rider rider = getCurrentRider();
 
-        if(!rider.equals(ride.getRider())) {
+        if (!rider.equals(ride.getRider())) {
             throw new RuntimeException("Rider is not the owner of this Ride");
         }
 
-        if(!ride.getRideStatus().equals(RideStatus.ENDED)) {
-            throw new RuntimeException("Ride status is not Ended hence cannot start rating, status: "+ride.getRideStatus());
+        if (!ride.getRideStatus().equals(RideStatus.ENDED)) {
+            throw new RuntimeException(
+                    "Ride status is not Ended hence cannot start rating, status: " + ride.getRideStatus());
         }
 
         return ratingService.rateDriver(ride, rating);
@@ -103,8 +105,7 @@ public class RiderServiceImpl implements RiderService {
     public Page<RideDto> getAllMyRides(PageRequest pageRequest) {
         Rider currentRider = getCurrentRider();
         return rideService.getAllRidesOfRider(currentRider, pageRequest).map(
-                ride -> modelMapper.map(ride, RideDto.class)
-        );
+                ride -> modelMapper.map(ride, RideDto.class));
     }
 
     @Override
@@ -119,8 +120,10 @@ public class RiderServiceImpl implements RiderService {
 
     @Override
     public Rider getCurrentRider() {
-        return riderRepository.findById(1L).orElseThrow(() -> new ResourceNotFoundException(
-            "Rider not found with id: "+1
-    ));
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return riderRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException(
+                "Rider not associated with user with id: " + user.getId()));
     }
 }
