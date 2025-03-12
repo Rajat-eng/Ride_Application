@@ -3,6 +3,7 @@ package com.rajat.uber.services.impl;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.rajat.uber.dto.DriverDto;
 import com.rajat.uber.dto.RideDto;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import com.rajat.uber.entities.Driver;
 import com.rajat.uber.entities.Ride;
 import com.rajat.uber.entities.RideRequest;
+import com.rajat.uber.entities.User;
 import com.rajat.uber.entities.enums.RideRequestStatus;
 import com.rajat.uber.entities.enums.RideStatus;
 
@@ -144,9 +146,12 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Driver getCurrentDriver() {
-        return driverRepository.findById(2L).orElseThrow(
-                () -> new ResourceNotFoundException("Driver not found with " + "id " + 2));
+         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+         return driverRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Driver not associated with user with " +
+                "id "+user.getId()));
     }
+    
 
     @Override
     public Driver updateDriverAvailability(Driver driver, boolean available) {
