@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
             ResourceNotFoundException exception) {
         ApiError apiError = ApiError.builder().status(HttpStatus.NOT_FOUND)
                 .message(exception.getMessage()).build();
-        return new ResponseEntity<ApiResponse<?>>(new ApiResponse<>(apiError),
+        return new ResponseEntity<>(new ApiResponse<>(apiError),
                 apiError.getStatus());
     }
 
@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
             RuntimeConflictException exception) {
         ApiError apiError = ApiError.builder().status(HttpStatus.CONFLICT)
                 .message(exception.getMessage()).build();
-        return new ResponseEntity<ApiResponse<?>>(new ApiResponse<>(apiError),
+        return new ResponseEntity<>(new ApiResponse<>(apiError),
                 apiError.getStatus());
     }
 
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .message(ex.getMessage())
                 .build();
-        return new ResponseEntity<ApiResponse<?>>(new ApiResponse<>(apiError),apiError.getStatus());
+        return new ResponseEntity<>(new ApiResponse<>(apiError),apiError.getStatus());
     }
 
     @ExceptionHandler(JwtException.class)
@@ -48,14 +48,14 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .message(ex.getMessage())
                 .build();
-        return new ResponseEntity<ApiResponse<?>>(new ApiResponse<>(apiError),apiError.getStatus());
+        return new ResponseEntity<>(new ApiResponse<>(apiError),apiError.getStatus());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleInternalServerError(Exception exception) {
         ApiError apiError = ApiError.builder().status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .message(exception.getMessage()).build();
-        return new ResponseEntity<ApiResponse<?>>(new ApiResponse<>(apiError),
+        return new ResponseEntity<>(new ApiResponse<>(apiError),
                 apiError.getStatus());
     }
 
@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError.builder().status(HttpStatus.BAD_REQUEST)
                 .message("Input validation failed").subErrors(errors).build();
 
-        return new ResponseEntity<ApiResponse<?>>(new ApiResponse<>(apiError),
+        return new ResponseEntity<>(new ApiResponse<>(apiError),
                 apiError.getStatus());
     }
 }

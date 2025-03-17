@@ -27,6 +27,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class DriverController {
      private final DriverService driverService;
 
+    @PostMapping("/updateLocation")
+    public ResponseEntity<DriverDto> updateLocation(@RequestBody PointDto location) {
+        return ResponseEntity.ok(driverService.updateLocation(location));
+    }
+    
     @PostMapping("/acceptRide/{rideRequestId}")
     public ResponseEntity<RideDto> acceptRide(@PathVariable Long rideRequestId) {
         return ResponseEntity.ok(driverService.acceptRide(rideRequestId));

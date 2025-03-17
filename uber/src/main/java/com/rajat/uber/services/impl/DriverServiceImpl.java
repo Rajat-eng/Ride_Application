@@ -1,11 +1,13 @@
 package com.rajat.uber.services.impl;
 
+import org.locationtech.jts.geom.Point;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.rajat.uber.dto.DriverDto;
+import com.rajat.uber.dto.PointDto;
 import com.rajat.uber.dto.RideDto;
 import com.rajat.uber.dto.RiderDto;
 import com.rajat.uber.exceptions.ResourceNotFoundException;
@@ -41,6 +43,15 @@ public class DriverServiceImpl implements DriverService {
     private final RatingService ratingService;
     private final ModelMapper modelMapper;
 
+    @Override
+    public DriverDto updateLocation(PointDto currentLocation){
+        Driver driver= getCurrentDriver();
+        Point point=modelMapper.map(currentLocation,Point.class);
+        System.out.println("current location " + point);
+        driver.setCurrentLocation(point);
+        driverRepository.save(driver);
+        return modelMapper.map(driver,DriverDto.class);
+    }
     @Override
     @Transactional
     public RideDto acceptRide(Long rideRequestId) {

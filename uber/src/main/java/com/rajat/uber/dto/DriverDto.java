@@ -1,5 +1,6 @@
 package com.rajat.uber.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,4 +15,5 @@ public class DriverDto {
     private Double rating;
     private Boolean available;
     private String vehicleId;
+    private PointDto currentLocation;
 }

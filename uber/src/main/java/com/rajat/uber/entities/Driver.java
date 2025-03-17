@@ -6,9 +6,13 @@ import org.locationtech.jts.geom.Point;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+
+
 
 @Entity
 @Getter
@@ -16,7 +20,9 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(indexes = {
+@EqualsAndHashCode(exclude = "id")
+@ToString
+@Table(name="driver",indexes = {
         @Index(name = "idx_driver_vehicle_id", columnList = "vehicleId")
 })
 public class Driver {
@@ -33,7 +39,8 @@ public class Driver {
     private String vehicleId;
 
     private Boolean available;
-    @Column(columnDefinition = "Geometry(Point, 4326)")
+
+    @Column(columnDefinition = "geometry(Point, 4326)")
     Point currentLocation;
 
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
