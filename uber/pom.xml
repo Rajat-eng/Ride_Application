@@ -59,6 +59,11 @@
             <artifactId>jts-core</artifactId>
             <version>1.18.0</version> <!-- Change to a known working version -->
         </dependency>
+         <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+            <version>6.6.5.Final</version>  <!-- Match Hibernate Core version -->
+        </dependency>
 
         <!-- ModelMapper for DTO conversions -->
         <dependency>
@@ -103,6 +108,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
+       
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
