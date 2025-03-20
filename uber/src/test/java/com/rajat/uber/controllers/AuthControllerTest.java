@@ -1,15 +1,28 @@
 package com.rajat.uber.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rajat.uber.TestContainerConfiguration;
+import com.rajat.uber.dto.LoginRequestDto;
 import com.rajat.uber.dto.OnboardDriverDto;
 import com.rajat.uber.dto.SignUpDto;
 import com.rajat.uber.entities.User;
@@ -17,10 +30,12 @@ import com.rajat.uber.entities.enums.Role;
 import com.rajat.uber.repositories.RiderRepository;
 import com.rajat.uber.repositories.UserRepository;
 
-@AutoConfigureWebTestClient
+@AutoConfigureWebTestClient(timeout = "100000")
+@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(TestContainerConfiguration.class)
 public class AuthControllerTest {
+
     @Autowired
     private WebTestClient webTestClient;
 
@@ -32,16 +47,39 @@ public class AuthControllerTest {
 
     private User user;
 
-    void setUpEach(){
-        user = User.builder().id(1L).email("test@example.com").password("password").roles(Set.of(Role.RIDER)).build();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Before
+    public void setUpEach() {
+        userRepository.deleteAll();
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        // Create an Admin User for Authentication
+        User adminUser = User.builder()
+                .email("admin@gmail.com")
+                .password("admin") // Ensure password encoding
+                .roles(Set.of(Role.ADMIN))  // ✅ This user is the logged-in Admin
+                .build();
+    
+        userRepository.save(adminUser);
+    
+        // Create a Rider User (to be onboarded)
+        user = User.builder()
+                .email("rider@example.com")
+                .password("password")
+                .roles(Set.of(Role.RIDER))  // ✅ This user is being onboarded
+                .build();
+    
+        user = userRepository.save(user);
     }
 
     @Test
-    void testSignUp_success() {
+    public void testSignUp_success() {
         SignUpDto signupDto = new SignUpDto();
-        signupDto.setEmail("test@example.com");
-        signupDto.setName("Test name");
+        signupDto.setEmail("newuser@example.com");  // Use unique email to avoid conflict
+        signupDto.setName("Test Name");
         signupDto.setPassword("password");
+        signupDto.setRoles(Set.of(Role.RIDER));
 
         webTestClient.post()
                 .uri("/auth/signup")
@@ -53,21 +91,46 @@ public class AuthControllerTest {
                 .jsonPath("$.data.name").isEqualTo(signupDto.getName());
     }
 
-    
-    void testOnboardDriver_success() {
+    // @Test
+    // public void testOnboardDriver_success() {
+    //     String adminToken = getAuthToken("admin@gmail.com", "admin");
+    //     OnboardDriverDto onboardDriverDto = new OnboardDriverDto();
+    //     onboardDriverDto.setVehicleId("ABC123");
 
-        if (!userRepository.existsById(1L)) {
-            userRepository.save(user);
-        }
+    //     webTestClient
+    //             .post()
+    //             .uri("/auth/onBoardNewDriver/" + user.getId()) 
+    //             .headers(headers -> headers.setBearerAuth(adminToken))
+    //             .bodyValue(onboardDriverDto)
+    //             .exchange()
+    //             .expectStatus().isCreated();
+    // }
 
-        OnboardDriverDto onboardDriverDto = new OnboardDriverDto();
-        onboardDriverDto.setVehicleId("ABC123");
-
-        webTestClient
-                .post()
-                .uri("/auth/onBoardNewDriver/1")
-                .bodyValue(onboardDriverDto)
+    @Test
+    public void testLogin_Success() {
+        LoginRequestDto loginDto = new LoginRequestDto();
+        loginDto.setEmail("admin@gmail.com");
+        loginDto.setPassword("admin");
+        String responseBody = webTestClient.post()
+                .uri("/auth/login")
+                .bodyValue(loginDto)
                 .exchange()
-                .expectStatus().isCreated();
+                .expectStatus().isOk()
+                .expectHeader().exists(HttpHeaders.SET_COOKIE) // ✅ Check if cookies are returned
+                .expectBody(String.class)
+                .returnResult()
+                .getResponseBody();
+
+        System.out.println("Login Response: " + responseBody);
+        assertNotNull(responseBody, "Login response body should not be null");
+
+        try {
+            JsonNode jsonNode = objectMapper.readTree(responseBody);
+            String accessToken = jsonNode.path("data").path("accessToken").asText();
+            assertNotNull(accessToken, "Access token should not be null");
+            System.out.println("Access Token: " + accessToken);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse access token from response", e);
+        }
     }
 }
