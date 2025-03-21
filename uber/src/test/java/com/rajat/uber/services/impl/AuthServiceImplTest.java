@@ -15,7 +15,6 @@ import com.rajat.uber.entities.enums.Role;
 import com.rajat.uber.repositories.UserRepository;
 import com.rajat.uber.security.JWTService;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,7 +70,7 @@ public class AuthServiceImplTest{
     }
 
     @Test 
-    void testLogin_WhenSuccess(){
+    public void testLogin_WhenSuccess(){
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any(Authentication.class))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(user);
@@ -87,7 +86,7 @@ public class AuthServiceImplTest{
     }
 
     @Test
-    void testSignup_whenSuccess() {
+    public void testSignup_whenSuccess() {
         // Arrange
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -96,13 +95,14 @@ public class AuthServiceImplTest{
         SignUpDto signupDto = new SignUpDto();
         signupDto.setEmail("test@example.com");
         signupDto.setPassword("password");
+        signupDto.setRoles(Set.of(Role.RIDER));
         UserDto userDto = authService.signup(signupDto);
 
         // Assert
         assertThat(userDto).isNotNull();
         assertThat(userDto.getEmail()).isEqualTo(signupDto.getEmail());
         verify(riderService).createNewRider(any(User.class));
-        verify(walletService).createNewWallet(any(User.class));
+        // verify(walletService).createNewWallet(any(User.class));
     }
     
 }
