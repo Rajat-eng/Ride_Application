@@ -15,7 +15,6 @@ import com.rajat.uber.entities.enums.Role;
 import com.rajat.uber.repositories.UserRepository;
 import com.rajat.uber.security.JWTService;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,7 +70,7 @@ public class AuthServiceImplTest{
     }
 
     @Test 
-    void testLogin_WhenSuccess(){
+    public void testLogin_WhenSuccess(){
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any(Authentication.class))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(user);
@@ -87,7 +86,7 @@ public class AuthServiceImplTest{
     }
 
     @Test
-    void testSignup_whenSuccess() {
+    public void testSignup_whenSuccess() {
         // Arrange
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(user);

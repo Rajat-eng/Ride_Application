@@ -3,10 +3,10 @@ package com.rajat.uber.controllers;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.springframework.http.HttpHeaders;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -27,7 +27,6 @@ import com.rajat.uber.dto.OnboardDriverDto;
 import com.rajat.uber.dto.SignUpDto;
 import com.rajat.uber.entities.User;
 import com.rajat.uber.entities.enums.Role;
-import com.rajat.uber.repositories.RiderRepository;
 import com.rajat.uber.repositories.UserRepository;
 
 @AutoConfigureWebTestClient(timeout = "100000")
@@ -42,9 +41,8 @@ public class AuthControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private RiderRepository riderRepository;
 
+    private static String token; // ✅ Store token for reuse
     private User user;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -57,7 +55,7 @@ public class AuthControllerTest {
         // Create an Admin User for Authentication
         User adminUser = User.builder()
                 .email("admin@gmail.com")
-                .password("admin") // Ensure password encoding
+                .password(passwordEncoder.encode("admin")) // Ensure password encoding
                 .roles(Set.of(Role.ADMIN))  // ✅ This user is the logged-in Admin
                 .build();
     
@@ -66,11 +64,13 @@ public class AuthControllerTest {
         // Create a Rider User (to be onboarded)
         user = User.builder()
                 .email("rider@example.com")
-                .password("password")
+                .password(passwordEncoder.encode("admin"))
                 .roles(Set.of(Role.RIDER))  // ✅ This user is being onboarded
                 .build();
     
         user = userRepository.save(user);
+
+        token = loginAndGetToken(webTestClient, "admin@gmail.com", "admin"); 
     }
 
     @Test
@@ -91,20 +91,19 @@ public class AuthControllerTest {
                 .jsonPath("$.data.name").isEqualTo(signupDto.getName());
     }
 
-    // @Test
-    // public void testOnboardDriver_success() {
-    //     String adminToken = getAuthToken("admin@gmail.com", "admin");
-    //     OnboardDriverDto onboardDriverDto = new OnboardDriverDto();
-    //     onboardDriverDto.setVehicleId("ABC123");
+    @Test
+    public void testOnboardDriver_success() {
+        OnboardDriverDto onboardDriverDto = new OnboardDriverDto();
+        onboardDriverDto.setVehicleId("ABC123");
 
-    //     webTestClient
-    //             .post()
-    //             .uri("/auth/onBoardNewDriver/" + user.getId()) 
-    //             .headers(headers -> headers.setBearerAuth(adminToken))
-    //             .bodyValue(onboardDriverDto)
-    //             .exchange()
-    //             .expectStatus().isCreated();
-    // }
+        webTestClient
+            .post()
+            .uri("/auth/onBoardNewDriver/" + user.getId())
+            .headers(headers -> headers.setBearerAuth(token))  
+            .bodyValue(onboardDriverDto)
+            .exchange()
+            .expectStatus().isCreated();
+    }
 
     @Test
     public void testLogin_Success() {
@@ -116,12 +115,11 @@ public class AuthControllerTest {
                 .bodyValue(loginDto)
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().exists(HttpHeaders.SET_COOKIE) // ✅ Check if cookies are returned
+                .expectHeader().exists(HttpHeaders.SET_COOKIE) 
                 .expectBody(String.class)
                 .returnResult()
                 .getResponseBody();
 
-        System.out.println("Login Response: " + responseBody);
         assertNotNull(responseBody, "Login response body should not be null");
 
         try {
@@ -131,6 +129,28 @@ public class AuthControllerTest {
             System.out.println("Access Token: " + accessToken);
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse access token from response", e);
+        }
+    }
+
+    private static String loginAndGetToken(WebTestClient client, String email, String password) {
+        LoginRequestDto loginDto = new LoginRequestDto(email, password);
+
+        String responseBody = client.post()
+                .uri("/auth/login")
+                .bodyValue(loginDto)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertNotNull(responseBody, "Login response should not be null");
+
+        try {
+            JsonNode jsonNode = new ObjectMapper().readTree(responseBody);
+            return jsonNode.path("data").path("accessToken").asText(); // ✅ Extract token
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse access token", e);
         }
     }
 }
